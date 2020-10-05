@@ -21,18 +21,17 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "assignment.h"
+#include "stdio.h"
 
-int main(void)
-{
+int main(void) {
   /*
    *  DO NOT WRITE TO THE WHOLE REGISTER!!!
    *  Write to the bits, that are meant for change.
    */
-   
-  //Systick init
-  LL_Init1msTick(8000000);
-  LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
-  LL_SetSystemCoreClock(8000000);	
+
+	LL_Init1msTick(8000000);
+	LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
+	LL_SetSystemCoreClock(8000000);
 
   /*
    * TASK - configure MCU peripherals so that button state can be read and LED will blink.
@@ -45,38 +44,46 @@ int main(void)
    */
 
 
-  /* Enable clock for GPIO port A*/
+	  /* Enable clock for GPIO port A*/
 
 	//type your code for GPIOA clock enable here:
+	RCC_AHBENR_REG |= (uint32_t)(1 << 17);
 
-
-  /* GPIOA pin 3 and 4 setup */
+	/* GPIOA pin 3 and 4 setup */
 
 	//type your code for GPIOA pins setup here:
+	// GPIOA pin 3:
+	GPIOA_MODER_REG &= ~(uint32_t)(0x3 << 6);		// MODER reset - input mode
+	GPIOA_OTYPER_REG &= ~(uint32_t)(1 << 3);		// OTYPER reset - output push-pull
+	GPIOA_OSPEEDER_REG &= ~(uint32_t)(0x3 << 6);	// OSPEEDER reset - low speed
+	GPIOA_PUPDR_REG &= ~(uint32_t)(0x3 << 6);		// PUPDR reset - no pull
+	GPIOA_PUPDR_REG |= (uint32_t)(1 << 6);			// PUPDR - pull-up
 
+	// GPIOA pin 4:
+	GPIOA_MODER_REG &= ~(uint32_t)(0x3 << 8);		// MODER reset - input mode
+	GPIOA_MODER_REG |= (uint32_t)(1 << 8);			// MODER - general purpose output mode
+	GPIOA_OTYPER_REG &= ~(uint32_t)(1 << 4);		// OTYPER reset - output push-pull
+	GPIOA_OSPEEDER_REG &= ~(uint32_t)(0x3 << 8);	// OSPEEDER reset - low speed
+	GPIOA_PUPDR_REG &= ~(uint32_t)(0x3 << 8);		// PUPDR reset - no pull
 
-  while (1)
-  {
-	  if(BUTTON_GET_STATE)
-	  {
-		  // 0.25s delay
-		  LL_mDelay(250);
-		  LED_ON;
-		  // 0.25s delay
-		  LL_mDelay(250);
-		  LED_OFF;
-	  }
-	  else
-	  {
-		  // 1s delay
-		  LL_mDelay(1000);
-		  LED_ON;
-		  // 1s delay
-		  LL_mDelay(1000);
-		  LED_OFF;
-	  }
-  }
-
+	while (1) {
+		if (BUTTON_GET_STATE) {
+			// 0.25s delay
+			LL_mDelay(250);
+			LED_ON;
+			// 0.25s delay
+			LL_mDelay(250);
+			LED_OFF;
+		}
+		else {
+			// 1s delay
+			LL_mDelay(1000);
+			LED_ON;
+			// 1s delay
+			LL_mDelay(1000);
+			LED_OFF;
+		}
+	}
 }
 
 /* USER CODE BEGIN 4 */
